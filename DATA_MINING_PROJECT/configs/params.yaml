@@ -1,0 +1,215 @@
+# ==============================================================================
+# CONFIGURATION FILE - Hotel Reviews Data Mining Project
+# Đề tài 11: Phân tích đánh giá khách sạn & chủ đề dịch vụ
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# A. DATA CONFIGURATION
+# ------------------------------------------------------------------------------
+data:
+  raw_path: "data/raw/hotel_reviews.csv"
+  processed_path: "data/processed/processed_reviews.csv"
+  
+  # Dataset info
+  source: "Kaggle Hotel Reviews Dataset"
+  n_rows_sample: 10000  # Sử dụng sample để demo
+  
+  # Columns mapping
+  columns:
+    review_text: "Review"
+    rating: "Rating"
+    reviewer_name: "Reviewer"
+    date: "Date"
+    hotel_name: "Hotel"
+
+# ------------------------------------------------------------------------------
+# B. PREPROCESSING CONFIGURATION
+# ------------------------------------------------------------------------------
+preprocessing:
+  lowercase: true
+  remove_special_chars: true
+  remove_stopwords: true
+  remove_numbers: true
+  apply_stemming: true  # SnowballStemmer
+  min_word_length: 2
+  
+  # Missing values handling
+  missing_strategy: "drop"  # drop / fill_empty
+  duplicate_strategy: "drop"  # drop / keep_first
+
+# ------------------------------------------------------------------------------
+# C. FEATURE ENGINEERING CONFIGURATION
+# ------------------------------------------------------------------------------
+features:
+  # TF-IDF settings
+  tfidf:
+    max_features: 5000
+    min_df: 2
+    max_df: 0.95
+    ngram_range: [1, 2]
+    
+  # Statistical features
+  statistical_features:
+    - review_length
+    - word_count
+    - avg_word_length
+    - sentence_count
+    - exclamation_count
+    - question_count
+    - uppercase_ratio
+    
+  # Aspect keywords (cho việc trích xuất khía cạnh)
+  aspect_keywords:
+    room: ["room", "clean", "dirty", "bed", "bathroom", "towel", "shower", "bath"]
+    service: ["service", "staff", "friendly", "helpful", "professional", "attentive"]
+    location: ["location", "central", "near", "close", "walking", "distance", "convenient"]
+    food: ["food", "breakfast", "dinner", "restaurant", "buffet", "meal", "delicious"]
+    price: ["price", "expensive", "cheap", "value", "worth", "money", "affordable"]
+    amenities: ["wifi", "pool", "parking", "gym", "spa", "facility", "amenities", "comfort"]
+    cleanliness: ["clean", "hygiene", "tidy", "spotless", "dust", "dirty", "maintenance"]
+    noise: ["noise", "quiet", "noisy", "loud", "peaceful", "sound", "disturb"]
+
+# ------------------------------------------------------------------------------
+# D. ASSOCIATION RULES CONFIGURATION
+# ------------------------------------------------------------------------------
+association_rules:
+  min_support: 0.01
+  min_confidence: 0.1
+  max_itemsets: 50
+  metric: "lift"  # support / confidence / lift
+  min_threshold: 1.0
+
+# ------------------------------------------------------------------------------
+# E. CLUSTERING CONFIGURATION
+# ------------------------------------------------------------------------------
+clustering:
+  method: "kmeans"  # kmeans / hdbscan
+  
+  kmeans:
+    n_clusters: 5
+    random_state: 42
+    max_iter: 300
+    n_init: 10
+    
+  hdbscan:
+    min_cluster_size: 50
+    min_samples: 10
+    cluster_selection_epsilon: 0.0
+    
+  # Evaluation
+  silhouette_samples: 1000  # Số mẫu để tính silhouette (cho hiệu năng)
+
+# ------------------------------------------------------------------------------
+# F. CLASSIFICATION CONFIGURATION (Sentiment/Aspect)
+# ------------------------------------------------------------------------------
+classification:
+  target: "sentiment"  # sentiment / aspect
+  
+  # Sentiment mapping: 1-2 = negative, 3 = neutral, 4-5 = positive
+  sentiment_mapping:
+    negative: [1, 2]
+    neutral: [3]
+    positive: [4, 5]
+    
+  # Baseline models
+  baselines:
+    - name: "LogisticRegression"
+      params:
+        max_iter: 1000
+        class_weight: "balanced"
+    - name: "NaiveBayes"
+      params:
+        alpha: 1.0
+        
+  # Strong model
+  strong_model:
+    name: "RandomForest"
+    params:
+      n_estimators: 200
+      max_depth: 20
+      class_weight: "balanced"
+      random_state: 42
+      
+  # Cross-validation
+  cv_folds: 5
+  test_size: 0.2
+  random_state: 42
+
+# ------------------------------------------------------------------------------
+# G. SEMI-SUPERVISED CONFIGURATION
+# ------------------------------------------------------------------------------
+semi_supervised:
+  label_percentages: [5, 10, 20, 50]  # p% labels giữ lại
+  
+  methods:
+    - name: "label_spreading"
+      params:
+        kernel: "knn"
+        n_neighbors: 7
+        alpha: 0.2
+        max_iter: 30
+    - name: "self_training"
+      params:
+        base_estimator: "LogisticRegression"
+        threshold: 0.9
+        max_iter: 100
+        
+  evaluation:
+    cv_folds: 3
+    test_size: 0.2
+
+# ------------------------------------------------------------------------------
+# H. REGRESSION CONFIGURATION
+# ------------------------------------------------------------------------------
+regression:
+  target: "rating"
+  
+  baselines:
+    - name: "Ridge"
+      params:
+        alpha: 1.0
+    - name: "LinearRegression"
+      params: {}
+      
+  strong_model:
+    name: "XGBoost"
+    params:
+      n_estimators: 100
+      max_depth: 6
+      learning_rate: 0.1
+      random_state: 42
+      
+  evaluation:
+    cv_folds: 5
+    test_size: 0.2
+    metrics: ["mae", "rmse", "r2"]
+
+# ------------------------------------------------------------------------------
+# I. VISUALIZATION CONFIGURATION
+# ------------------------------------------------------------------------------
+visualization:
+  style: "seaborn"
+  palette: "husl"
+  figure_size: [12, 8]
+  dpi: 150
+  save_format: "png"
+  
+  colors:
+    positive: "#2ecc71"
+    neutral: "#f39c12"
+    negative: "#e74c3c"
+    primary: "#3498db"
+    secondary: "#9b59b6"
+
+# ------------------------------------------------------------------------------
+# J. OUTPUT CONFIGURATION
+# ------------------------------------------------------------------------------
+output:
+  figures_dir: "outputs/figures"
+  tables_dir: "outputs/tables"
+  models_dir: "outputs/models"
+  reports_dir: "outputs/reports"
+  
+  save_models: true
+  save_results: true
+  verbose: true

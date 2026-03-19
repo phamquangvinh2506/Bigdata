@@ -1,0 +1,42 @@
+# ==============================================================================
+# PYTHON ENVIRONMENT REQUIREMENTS
+# Hotel Reviews Data Mining Project - Đề tài 11
+# ==============================================================================
+
+# Core Data Science
+numpy>=1.24.0
+pandas>=2.0.0
+scipy>=1.10.0
+
+# Machine Learning
+scikit-learn>=1.3.0
+mlxtend>=0.22.0
+xgboost>=2.0.0
+
+# Text Processing
+nltk>=3.8.0
+beautifulsoup4>=4.12.0
+regex>=2023.0.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+wordcloud>=1.9.0
+
+# Jupyter & Notebooks
+jupyter>=1.0.0
+ipykernel>=6.25.0
+nbformat>=5.9.0
+
+# Configuration
+pyyaml>=6.0.0
+python-dotenv>=1.0.0
+
+# Progress bars
+tqdm>=4.65.0
+
+# Streamlit (for Demo App)
+streamlit>=1.28.0
+
+# Optional: For faster processing
+joblib>=1.3.0
